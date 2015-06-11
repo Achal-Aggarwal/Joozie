@@ -1,6 +1,8 @@
 package com.joozie.core;
 
+import com.joozie.core.node.Decision;
 import com.joozie.core.node.EndNode;
+import com.joozie.core.node.Fork;
 import com.joozie.core.node.KillNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,5 +81,24 @@ public class NodeListTest {
 
     verify(firstTransitiveNode).setErrorNode(endNode);
     verify(secondTransitiveNode).setErrorNode(endNode);
+  }
+
+  @Test
+  public void shouldUpdateTransitionNodesForDecisionNode(){
+    Decision decision = mock(Decision.class);
+
+    nodeList.firstDo(decision);
+
+    verify(decision).updateLastNodeTransitionNodes();
+    verify(decision).updateErrorNodeOfEveryNodeInNodeList();
+  }
+
+  @Test
+  public void shouldUpdateTransitionNodesForForkNode(){
+    Fork fork = mock(Fork.class);
+
+    nodeList.firstDo(fork);
+
+    verify(fork).updateErrorNodeOfEveryNodeInNodeList();
   }
 }

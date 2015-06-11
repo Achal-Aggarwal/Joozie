@@ -113,4 +113,17 @@ public class DecisionTest {
 
     verify(mockNodeList).updateLastNodeTransitionNodes(endNode, killNode);
   }
+
+  @Test
+  public void shouldUpdateAllCaseNodeNodeListAllNodesErrorNode(){
+    KillNode killNode = new KillNode("Kill node message");
+
+    Decision decisionNode = new Decision();
+    decisionNode.ifTrue(PREDICATE_IF, mockNodeList);
+    decisionNode.setErrorNode(killNode);
+
+    decisionNode.updateErrorNodeOfEveryNodeInNodeList();
+
+    verify(mockNodeList).updateErrorNodeOfEveryNode(killNode);
+  }
 }
