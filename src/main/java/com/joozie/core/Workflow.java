@@ -12,11 +12,6 @@ public class Workflow extends Node implements Configurable {
     private StartNode startNode;
     private NodeList nodeList;
 
-    public Workflow(){
-        super();
-        init();
-    }
-
     public Workflow(String workflowName){
         super(workflowName);
         init();
@@ -27,6 +22,7 @@ public class Workflow extends Node implements Configurable {
         killNode = new KillNode(getName().toUpperCase() + "-ERROR", "An error occurred in node : ");
 
         nodeList = new NodeList(endNode, killNode);
+
         startNode = new StartNode(endNode.getName());
     }
 
@@ -49,12 +45,12 @@ public class Workflow extends Node implements Configurable {
         return this;
     }
 
-    public String getEndNodeName() {
-        return endNode.getName();
+    public EndNode getEndNode() {
+        return endNode;
     }
 
-    public String getKillNodeName() {
-        return killNode.getName();
+    public KillNode getKillNode() {
+        return killNode;
     }
 
     public String getKillNodeMessage() {

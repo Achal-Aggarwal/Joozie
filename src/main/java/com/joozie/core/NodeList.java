@@ -1,44 +1,19 @@
 package com.joozie.core;
 
-import com.joozie.core.node.Decision;
-import com.joozie.core.node.Fork;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
-public class NodeList extends ArrayList<Node> {
+public class NodeList extends TransitiveNode {
   public static final boolean DONT_OVERWITE = false;
   public static final boolean OVERWRITE = true;
-  private Node endNode;
-  private Node killNode;
+  private List<Node> nodes = new ArrayList<Node>();
 
-  public NodeList(Node endNode, Node killNode) {
-    this.endNode = endNode;
-    this.killNode = killNode;
-  }
-
-  private void setTransitionNodes(Node node, Node endNode, Node killNode, boolean overwrite){
-    if (node instanceof Action){
-      Action action = (Action) node;
-
-      if (endNode != null && (overwrite || action.isSuccessNotSet())){
-        action.onSuccess(endNode.getName());
-      }
-
-      if (killNode != null && (overwrite || action.isErrorNotSet())){
-        action.onError(killNode.getName());
-      }
-    } else if (node instanceof Decision){
-      ((Decision) node).updateTransitionNodes(endNode, killNode);
-    } else if (node instanceof Fork){
-      ((Fork) node).updateTransitionNodes(endNode);
-    }
-  }
-
-  private void addNodeAndSetTransitionNodes(Node node){
-    add(node);
-    setTransitionNodes(node, this.endNode, this.killNode, DONT_OVERWITE);
+  public NodeList(Node nextNode, Node errorNode) {
+    setNextNode(nextNode);
+    setErrorNode(errorNode);
   }
 
   public NodeList firstDo(Node node) {
@@ -47,32 +22,63 @@ public class NodeList extends ArrayList<Node> {
   }
 
   public NodeList thenDo(Node node) {
-    updateLastNodeTransitionNodes(node, this.killNode);
+    updateLastNodeTransitionNodes(node, null);
 
     addNodeAndSetTransitionNodes(node);
     return this;
   }
 
-  public void updateLastNodeTransitionNodes(Node endNode, Node killNode) {
-    Node lastAddedNode = get(size() - 1);
-    setTransitionNodes(lastAddedNode, endNode, killNode, OVERWRITE);
+  private void addNodeAndSetTransitionNodes(Node node){
+    nodes.add(node);
+    setTransitionNodes(node, getNextNode(), getErrorNode(), DONT_OVERWITE);
+  }
+
+  public void updateLastNodeTransitionNodes(Node nextNode, Node errorNode) {
+    Node lastAddedNode = nodes.get(nodes.size() - 1);
+    setTransitionNodes(lastAddedNode, nextNode, errorNode, OVERWRITE);
+  }
+
+  private void setTransitionNodes(Node node, Node endNode, Node killNode, boolean overwrite){
+    if (node instanceof TransitiveNode){
+      TransitiveNode transitiveNode = (TransitiveNode) node;
+
+      if (endNode != null && (overwrite || transitiveNode.isNextNodeNotSet())){
+        transitiveNode.setNextNode(endNode);
+      }
+
+      if (killNode != null && (overwrite || transitiveNode.isErrorNodeNotSet())){
+        transitiveNode.setErrorNode(killNode);
+      }
+    }
+  }
+
+  public void updateErrorNodeOfEveryNode(Node errorNode) {
+    for (Node node : nodes) {
+      if (node instanceof TransitiveNode){
+        ((TransitiveNode) node).setErrorNode(errorNode);
+      }
+    }
   }
 
   public String getFirstNodeName(){
-    if (isEmpty()){
+    if (nodes.isEmpty()){
       return "";
     }
 
-    return get(0).getName();
+    return nodes.get(0).getName();
   }
 
   public String build(){
     StringBuilder result = new StringBuilder();
 
-    for (Node node : this) {
+    for (Node node : nodes) {
       result.append(node.build());
     }
 
     return result.toString();
+  }
+
+  public Node getNode(int index) {
+    return nodes.get(index);
   }
 }

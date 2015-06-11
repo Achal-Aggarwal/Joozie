@@ -1,16 +1,21 @@
 package com.joozie.core;
 
+import com.joozie.core.node.EndNode;
+import com.joozie.core.node.KillNode;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class ActionTest{
+  EndNode endNode = new EndNode("SuccessNode");
+  KillNode killNode = new KillNode("ErrorNode", "");
+
   @Test
   public void shouldBuildWithGivenNameAndOkAndErrorNodes(){
     DummyAction dummyAction = new DummyAction("DummyName");
-    assertThat((DummyAction) dummyAction.onSuccess("SuccessNode"), is(dummyAction));
-    assertThat((DummyAction) dummyAction.onError("ErrorNode"), is(dummyAction));
+    assertThat((DummyAction) dummyAction.onSuccess(endNode), is(dummyAction));
+    assertThat((DummyAction) dummyAction.onError(killNode), is(dummyAction));
     assertThat(dummyAction.build(), is(
       "<action name='DummyName'>"
         + "DummyActionContent"
@@ -22,14 +27,14 @@ public class ActionTest{
 
   @Test
   public void shouldReturnTrueIfSuccessNodeNameIsNotSet(){
-    assertThat(new DummyAction().isSuccessNotSet(), is(true));
-    assertThat(new DummyAction().onSuccess("ON_SUCCESS").isSuccessNotSet(), is(false));
+    assertThat(new DummyAction().isNextNodeNotSet(), is(true));
+    assertThat(new DummyAction().onSuccess(endNode).isNextNodeNotSet(), is(false));
   }
 
   @Test
   public void shouldReturnTrueIfErrorNodeNameIsNotSet(){
-    assertThat(new DummyAction().isErrorNotSet(), is(true));
-    assertThat(new DummyAction().onError("ON_ERROR").isErrorNotSet(), is(false));
+    assertThat(new DummyAction().isErrorNodeNotSet(), is(true));
+    assertThat(new DummyAction().onError(killNode).isErrorNodeNotSet(), is(false));
   }
 }
 

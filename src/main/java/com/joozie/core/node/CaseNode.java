@@ -22,7 +22,7 @@ public class CaseNode {
     return nodeList.build();
   }
 
-  public void updateEndAndErrorNode(Node endNode, Node killNode){
+  public void updateLastNodeTransitionNodes(Node endNode, Node killNode){
     nodeList.updateLastNodeTransitionNodes(endNode, killNode);
   }
 

@@ -2,11 +2,12 @@ package com.joozie.core.node;
 
 import com.joozie.core.Node;
 import com.joozie.core.NodeList;
+import com.joozie.core.TransitiveNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Fork extends Node {
+public class Fork extends TransitiveNode {
   List<NodeList> nodeLists = new ArrayList<NodeList>();
   JoinNode joinNode;
 
@@ -22,6 +23,7 @@ public class Fork extends Node {
 
   public Fork doThis(NodeList nodeList){
     nodeLists.add(nodeList);
+    nodeList.updateLastNodeTransitionNodes(joinNode, null);
 
     return this;
   }
@@ -34,8 +36,10 @@ public class Fork extends Node {
     return getName() + "-JOIN";
   }
 
-  public void updateTransitionNodes(Node endNode){
-    joinNode.setNextNode(endNode);
+  @Override
+  public void setNextNode(Node nextNode) {
+    super.setNextNode(nextNode);
+    joinNode.setNextNode(nextNode);
   }
 
   @Override
@@ -46,7 +50,6 @@ public class Fork extends Node {
 
     for (NodeList nodeList : nodeLists) {
       result.append("<path start='" + nodeList.getFirstNodeName() + "'/>");
-      nodeList.updateLastNodeTransitionNodes(joinNode, null);
     }
 
     result.append(joinNode.build());

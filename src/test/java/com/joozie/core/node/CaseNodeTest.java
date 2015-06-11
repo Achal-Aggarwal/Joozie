@@ -50,7 +50,7 @@ public class CaseNodeTest {
     Node endNode = new EndNode();
     Node killNode = new EndNode();
 
-    new CaseNode("PREDICATE", nodeList).updateEndAndErrorNode(endNode, killNode);
+    new CaseNode("PREDICATE", nodeList).updateLastNodeTransitionNodes(endNode, killNode);
     verify(nodeList).updateLastNodeTransitionNodes(endNode, killNode);
   }
 

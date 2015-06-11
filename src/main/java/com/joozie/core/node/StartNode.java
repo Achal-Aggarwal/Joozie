@@ -3,7 +3,6 @@ package com.joozie.core.node;
 import com.joozie.core.Node;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 public class StartNode extends Node {
   public StartNode(String toNodeName){
     super(toNodeName);

@@ -24,9 +24,9 @@ public class WorkflowTest {
   public void shouldBuildBasicWorkflowAppXmlCode(){
     assertThat(workflow.build(), is(
       "<workflow-app name='" + WORKFLOW_NAME + "' xmlns='uri:oozie:workflow:0.1'>"
-        + "<start to='" + workflow.getEndNodeName() + "'/>"
-        + "<end name='" + workflow.getEndNodeName() + "'/>"
-        + "<kill name='" + workflow.getKillNodeName() + "'><message>" + workflow.getKillNodeMessage() + "</message></kill>"
+        + "<start to='" + workflow.getEndNode().getName() + "'/>"
+        + "<end name='" + workflow.getEndNode().getName() + "'/>"
+        + "<kill name='" + workflow.getKillNode().getName() + "'><message>" + workflow.getKillNodeMessage() + "</message></kill>"
       + "</workflow-app>"
     ));
   }
@@ -43,18 +43,18 @@ public class WorkflowTest {
   }
 
   @Test
-  public void shouldAbleToAddAndSetFirstActionAndCorrespondingEnd(){
+  public void shouldAbleToAddFirstActionAndSetCorrespondingEnd(){
     Action mockAction = mock(Action.class);
 
     when(mockAction.build()).thenReturn("dummyAction");
     when(mockAction.getName()).thenReturn("dummyActionName");
-    when(mockAction.isSuccessNotSet()).thenReturn(true);
-    when(mockAction.isErrorNotSet()).thenReturn(true);
+    when(mockAction.isNextNodeNotSet()).thenReturn(true);
+    when(mockAction.isErrorNodeNotSet()).thenReturn(true);
 
     assertThat(workflow.firstDo(mockAction), is(workflow));
 
-    verify(mockAction).onSuccess(workflow.getEndNodeName());
-    verify(mockAction).onError(workflow.getKillNodeName());
+    verify(mockAction).setNextNode(workflow.getEndNode());
+    verify(mockAction).setErrorNode(workflow.getKillNode());
 
     assertThat(workflow.build(), containsString("<start to='dummyActionName'/>dummyAction"));
   }
@@ -64,21 +64,21 @@ public class WorkflowTest {
     Action mockFirstAction = mock(Action.class);
     when(mockFirstAction.getName()).thenReturn("firstActionName");
     when(mockFirstAction.build()).thenReturn("firstAction");
-    when(mockFirstAction.isSuccessNotSet()).thenReturn(true);
-    when(mockFirstAction.isErrorNotSet()).thenReturn(true);
+    when(mockFirstAction.isNextNodeNotSet()).thenReturn(true);
+    when(mockFirstAction.isErrorNodeNotSet()).thenReturn(true);
 
     Action mockSecondAction = mock(Action.class);
     when(mockSecondAction.getName()).thenReturn("secondActionName");
     when(mockSecondAction.build()).thenReturn("secondAction");
-    when(mockSecondAction.isSuccessNotSet()).thenReturn(true);
-    when(mockSecondAction.isErrorNotSet()).thenReturn(true);
+    when(mockSecondAction.isNextNodeNotSet()).thenReturn(true);
+    when(mockSecondAction.isErrorNodeNotSet()).thenReturn(true);
 
     assertThat(workflow.firstDo(mockFirstAction), is(workflow));
     assertThat(workflow.thenDo(mockSecondAction), is(workflow));
 
-    verify(mockFirstAction).onSuccess(workflow.getEndNodeName());
-    verify(mockFirstAction).onSuccess(mockSecondAction.getName());
-    verify(mockSecondAction).onSuccess(workflow.getEndNodeName());
-    verify(mockSecondAction).onError(workflow.getKillNodeName());
+    verify(mockFirstAction).setNextNode(workflow.getEndNode());
+    verify(mockFirstAction).setNextNode(mockSecondAction);
+    verify(mockSecondAction).setNextNode(workflow.getEndNode());
+    verify(mockSecondAction).setErrorNode(workflow.getKillNode());
   }
 }

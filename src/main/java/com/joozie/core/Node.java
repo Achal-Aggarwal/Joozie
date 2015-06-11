@@ -6,7 +6,7 @@ public abstract class Node {
   private static int nodeCounter = 0;
 
   protected Node(){
-    this("node_" + nodeCounter);
+    this("NODE-" + nodeCounter);
     nodeCounter += 1;
   }
 

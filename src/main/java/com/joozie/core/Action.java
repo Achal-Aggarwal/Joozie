@@ -1,9 +1,6 @@
 package com.joozie.core;
 
-public abstract class Action extends Node {
-  protected String okNodeName;
-  protected String errorNodeName;
-
+public abstract class Action extends TransitiveNode {
   protected Action(){
     super();
   }
@@ -12,14 +9,14 @@ public abstract class Action extends Node {
     super(actionName);
   }
 
-  public Action onSuccess(String successNodeName){
-    okNodeName = successNodeName;
+  public Action onSuccess(Node successNodeName){
+    setNextNode(successNodeName);
 
     return this;
   }
 
-  public Action onError(String errorNodeName){
-    this.errorNodeName = errorNodeName;
+  public Action onError(Node errorNodeName){
+    setErrorNode(errorNodeName);
 
     return this;
   }
@@ -29,18 +26,10 @@ public abstract class Action extends Node {
     return
       "<action name='" + getName() + "'>"
         + getActionXmlString()
-        + "<ok to='" + okNodeName + "'/>"
-        + "<error to='" + errorNodeName + "'/>"
+        + "<ok to='" + getNextNode().getName() + "'/>"
+        + "<error to='" + getErrorNode().getName() + "'/>"
       + "</action>";
   }
 
   protected abstract String getActionXmlString();
-
-  public boolean isSuccessNotSet() {
-    return okNodeName == null;
-  }
-
-  public boolean isErrorNotSet() {
-    return errorNodeName == null;
-  }
 }

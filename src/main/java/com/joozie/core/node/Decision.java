@@ -2,12 +2,16 @@ package com.joozie.core.node;
 
 import com.joozie.core.Node;
 import com.joozie.core.NodeList;
+import com.joozie.core.TransitiveNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Decision extends Node {
+public class Decision extends TransitiveNode {
+  public static final boolean DEFAULT_CASE = true;
   List<CaseNode> caseList = new ArrayList<CaseNode>();
+  private Node nextNode;
+  private Node errorNode;
 
   public Decision(){
     super();
@@ -17,11 +21,27 @@ public class Decision extends Node {
     super(name);
   }
 
+  public Decision(Node nextNode, Node errorNode) {
+    this.nextNode = nextNode;
+    this.errorNode = errorNode;
+  }
 
   public Decision ifTrue(String predicate, NodeList nodeList){
+    updateNodeListTransitionNodes(nodeList);
+
     caseList.add(new CaseNode(predicate, nodeList));
 
     return this;
+  }
+
+  private void updateNodeListTransitionNodes(NodeList nodeList) {
+    if (nextNode != null && nodeList.getNextNode() == null){
+      nodeList.updateLastNodeTransitionNodes(nextNode, null);
+    }
+
+    if (errorNode != null && nodeList.getErrorNode() == null){
+      nodeList.updateErrorNodeOfEveryNode(errorNode);
+    }
   }
 
   public Decision ifTrue(String predicate, Node node){
@@ -37,7 +57,9 @@ public class Decision extends Node {
   }
 
   public Decision otherwise(NodeList nodeList){
-    caseList.add(new CaseNode(null, nodeList, true));
+    updateNodeListTransitionNodes(nodeList);
+
+    caseList.add(new CaseNode(null, nodeList, DEFAULT_CASE));
 
     return this;
   }
@@ -46,9 +68,9 @@ public class Decision extends Node {
     return otherwise(new NodeList().firstDo(node));
   }
 
-  public void updateTransitionNodes(Node endNode, Node killNode){
+  public void updateLastNodeTransitionNodes(Node endNode, Node killNode){
     for (CaseNode caseNode : caseList) {
-      caseNode.updateEndAndErrorNode(endNode, killNode);
+      caseNode.updateLastNodeTransitionNodes(endNode, killNode);
     }
   }
 
