@@ -24,12 +24,19 @@ public class Fork extends TransitiveNode {
   public Fork doThis(NodeList nodeList){
     nodeLists.add(nodeList);
     nodeList.updateLastNodeTransitionNodes(joinNode, null);
+    nodeList.updateErrorNodeOfEveryNode(getErrorNode());
 
     return this;
   }
 
   public Fork doThis(Node node){
     return doThis(new NodeList().firstDo(node));
+  }
+
+  public void updateErrorNodeOfEveryNodeInNodeList(){
+    for (NodeList nodeList : nodeLists) {
+      nodeList.updateErrorNodeOfEveryNode(getErrorNode());
+    }
   }
 
   private String joinNodeName(){
@@ -51,6 +58,8 @@ public class Fork extends TransitiveNode {
     for (NodeList nodeList : nodeLists) {
       result.append("<path start='" + nodeList.getFirstNodeName() + "'/>");
     }
+
+    result.append("</fork>");
 
     result.append(joinNode.build());
 

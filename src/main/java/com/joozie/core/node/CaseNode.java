@@ -26,6 +26,10 @@ public class CaseNode {
     nodeList.updateLastNodeTransitionNodes(endNode, killNode);
   }
 
+  public void updateErrorNodeOfEveryNodeInNodeList(Node errorNode){
+    nodeList.updateErrorNodeOfEveryNode(errorNode);
+  }
+
   public String build() {
     if (defaultCase){
       return "<default to='" + nodeList.getFirstNodeName() + "'/>";

@@ -106,10 +106,10 @@ public class DecisionTest {
     EndNode endNode = new EndNode();
     KillNode killNode = new KillNode("Kill node message");
 
-    Decision decisionNode = new Decision();
+    Decision decisionNode = new Decision(endNode, killNode);
     decisionNode.ifTrue(PREDICATE_IF, mockNodeList);
 
-    decisionNode.updateLastNodeTransitionNodes(endNode, killNode);
+    decisionNode.updateLastNodeTransitionNodes();
 
     verify(mockNodeList).updateLastNodeTransitionNodes(endNode, killNode);
   }

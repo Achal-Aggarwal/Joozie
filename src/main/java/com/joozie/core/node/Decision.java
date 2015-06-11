@@ -10,8 +10,6 @@ import java.util.List;
 public class Decision extends TransitiveNode {
   public static final boolean DEFAULT_CASE = true;
   List<CaseNode> caseList = new ArrayList<CaseNode>();
-  private Node nextNode;
-  private Node errorNode;
 
   public Decision(){
     super();
@@ -22,8 +20,8 @@ public class Decision extends TransitiveNode {
   }
 
   public Decision(Node nextNode, Node errorNode) {
-    this.nextNode = nextNode;
-    this.errorNode = errorNode;
+    setNextNode(nextNode);
+    setErrorNode(errorNode);
   }
 
   public Decision ifTrue(String predicate, NodeList nodeList){
@@ -35,12 +33,12 @@ public class Decision extends TransitiveNode {
   }
 
   private void updateNodeListTransitionNodes(NodeList nodeList) {
-    if (nextNode != null && nodeList.getNextNode() == null){
-      nodeList.updateLastNodeTransitionNodes(nextNode, null);
+    if (getNextNode() != null && nodeList.getNextNode() == null){
+      nodeList.updateLastNodeTransitionNodes(getNextNode(), null);
     }
 
-    if (errorNode != null && nodeList.getErrorNode() == null){
-      nodeList.updateErrorNodeOfEveryNode(errorNode);
+    if (getErrorNode() != null && nodeList.getErrorNode() == null){
+      nodeList.updateErrorNodeOfEveryNode(getErrorNode());
     }
   }
 
@@ -68,9 +66,15 @@ public class Decision extends TransitiveNode {
     return otherwise(new NodeList().firstDo(node));
   }
 
-  public void updateLastNodeTransitionNodes(Node endNode, Node killNode){
+  public void updateLastNodeTransitionNodes(){
     for (CaseNode caseNode : caseList) {
-      caseNode.updateLastNodeTransitionNodes(endNode, killNode);
+      caseNode.updateLastNodeTransitionNodes(getNextNode(), getErrorNode());
+    }
+  }
+
+  public void updateErrorNodeOfEveryNodeInNodeList(){
+    for (CaseNode caseNode : caseList) {
+      caseNode.updateErrorNodeOfEveryNodeInNodeList(getErrorNode());
     }
   }
 

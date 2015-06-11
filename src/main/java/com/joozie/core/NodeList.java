@@ -1,5 +1,7 @@
 package com.joozie.core;
 
+import com.joozie.core.node.Decision;
+import com.joozie.core.node.Fork;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -49,6 +51,13 @@ public class NodeList extends TransitiveNode {
       if (killNode != null && (overwrite || transitiveNode.isErrorNodeNotSet())){
         transitiveNode.setErrorNode(killNode);
       }
+    }
+
+    if (node instanceof Decision){
+      ((Decision) node).updateLastNodeTransitionNodes();
+      ((Decision) node).updateErrorNodeOfEveryNodeInNodeList();
+    } else if (node instanceof Fork){
+      ((Fork) node).updateErrorNodeOfEveryNodeInNodeList();
     }
   }
 
