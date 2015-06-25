@@ -32,14 +32,14 @@ public class Workflow extends Node implements Configurable {
         return this;
     }
 
-    public Workflow firstDo(Node action) {
+    public Workflow firstDo(TransitiveNode action) {
         startNode = new StartNode(action.getName());
         nodeList.firstDo(action);
 
         return this;
     }
 
-    public Workflow thenDo(Node action) {
+    public Workflow thenDo(TransitiveNode action) {
         nodeList.thenDo(action);
 
         return this;
