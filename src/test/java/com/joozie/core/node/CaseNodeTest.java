@@ -13,8 +13,6 @@ import static org.mockito.Mockito.when;
 
 public class CaseNodeTest {
 
-  public static final boolean DEFAULT_CASE = true;
-
   @Test
   public void shouldCreateCaseWithAPredicate(){
     NodeList nodeList = mock(NodeList.class);
@@ -30,7 +28,7 @@ public class CaseNodeTest {
     NodeList nodeList = mock(NodeList.class);
     when(nodeList.getFirstNodeName()).thenReturn("FIRST_NODE_NAME");
 
-    CaseNode caseNode = new CaseNode("PREDICATE", nodeList, DEFAULT_CASE);
+    CaseNode caseNode = CaseNode.getDefaultNode(nodeList);
     assertThat(caseNode, instanceOf(CaseNode.class));
     assertThat(caseNode.build(), is("<default to='FIRST_NODE_NAME'/>"));
   }
@@ -53,5 +51,4 @@ public class CaseNodeTest {
     new CaseNode("PREDICATE", nodeList).updateLastNodeTransitionNodes(endNode, killNode);
     verify(nodeList).updateLastNodeTransitionNodes(endNode, killNode);
   }
-
 }

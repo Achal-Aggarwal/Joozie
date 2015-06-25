@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Decision extends TransitiveNode {
-  public static final boolean DEFAULT_CASE = true;
   List<CaseNode> caseList = new ArrayList<CaseNode>();
+  private boolean defaultCasePresent = false;
 
   public Decision(){
     super();
@@ -57,7 +57,9 @@ public class Decision extends TransitiveNode {
   public Decision otherwise(NodeList nodeList){
     updateNodeListTransitionNodes(nodeList);
 
-    caseList.add(new CaseNode(null, nodeList, DEFAULT_CASE));
+    defaultCasePresent = true;
+
+    caseList.add(CaseNode.getDefaultNode(nodeList));
 
     return this;
   }
@@ -67,6 +69,11 @@ public class Decision extends TransitiveNode {
   }
 
   public void updateLastNodeTransitionNodes(){
+    if (!defaultCasePresent){
+      defaultCasePresent = true;
+      caseList.add(CaseNode.getEmptyDefaultNode());
+    }
+
     for (CaseNode caseNode : caseList) {
       caseNode.updateLastNodeTransitionNodes(getNextNode(), getErrorNode());
     }
