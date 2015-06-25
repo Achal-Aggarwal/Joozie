@@ -18,8 +18,8 @@ public class Workflow extends Node implements Configurable {
     }
 
     private void init(){
-        endNode = new EndNode(getName().toUpperCase() + "-END");
-        killNode = new KillNode(getName().toUpperCase() + "-ERROR", "An error occurred in node : ");
+        endNode = new EndNode(getName() + "-end");
+        killNode = new KillNode(getName() + "-error", "An error occurred in node : ");
 
         nodeList = new NodeList(endNode, killNode);
 

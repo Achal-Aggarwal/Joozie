@@ -8,6 +8,7 @@ import com.joozie.core.action.command.MkdirCommand;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class JavaAction extends Action implements Configurable {
@@ -15,6 +16,7 @@ public class JavaAction extends Action implements Configurable {
   List<Command> commandList = new ArrayList<Command>();
   String mainClass;
   List<String> javaOpts = new ArrayList<String>();
+  HashMap<String, String> javaOptsMap = new HashMap<String, String>();
   List<String> args = new ArrayList<String>();
 
   String filePath;
@@ -60,13 +62,19 @@ public class JavaAction extends Action implements Configurable {
     return this;
   }
 
+  public JavaAction withJavaOpt(String key, String value){
+    javaOptsMap.put(key, value);
+
+    return this;
+  }
+
   public JavaAction withArg(String arg){
     args.add(arg);
 
     return this;
   }
 
-  public JavaAction withInput(String key, String value){
+  public JavaAction withArg(String key, String value){
     args.add("-" + key);
     args.add(value);
 
@@ -122,7 +130,15 @@ public class JavaAction extends Action implements Configurable {
   }
 
   private String getJavaOptsXMLString() {
-    return StringUtils.join(javaOpts.iterator(), " ");
+    StringBuilder result = new StringBuilder();
+
+    result.append(StringUtils.join(javaOpts.iterator(), " ") + " ");
+
+    for (String javaOpt : javaOptsMap.keySet()) {
+      result.append("-D" + javaOpt + "=" + javaOptsMap.get(javaOpt));
+    }
+
+    return result.toString();
   }
 
   private String getArgsXMLString() {

@@ -16,6 +16,7 @@ public class HiveAction extends Action implements Configurable {
   String script;
   HashMap<String, String> param = new HashMap<String, String>();
 
+  String jobXML;
   String filePath;
   String archivePath;
 
@@ -57,6 +58,12 @@ public class HiveAction extends Action implements Configurable {
     return this;
   }
 
+  public HiveAction withParameter(HashMap<String, String> params){
+    param.putAll(params);
+
+    return this;
+  }
+
   public HiveAction usingFile(String filePath){
     this.filePath = filePath;
 
@@ -65,6 +72,12 @@ public class HiveAction extends Action implements Configurable {
 
   public HiveAction usingArchive(String filePath){
     this.archivePath = filePath;
+
+    return this;
+  }
+
+  public HiveAction usingJobXML(String filePath){
+    this.jobXML = filePath;
 
     return this;
   }
