@@ -1,6 +1,6 @@
 # Joozie
 Oozie workflow generator
-
+```
   public static Workflow sampleDecisionInWorkflow(){
     return new Workflow("Sample-Decision-Workflow")
       .firstDo(new Decision("decision")
@@ -219,3 +219,4 @@ Oozie workflow generator
     </kill>
   </workflow-app>
   */
+```
